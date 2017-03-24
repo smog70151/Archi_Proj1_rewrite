@@ -26,8 +26,6 @@ void read_iimage();
 void read_dimage();
 //Snapshot
 void Snapshot();
-//Error halt immediately
-void Error_Halt();
 
 
 int main()
@@ -42,14 +40,18 @@ int main()
     //simulation part
     while(1)
     {
+        if(error_halt==1)
+            break;
+        //if(cyc==425)
+        //    break;
         Snapshot();
+        //if(cyc==11) break;
         cyc++; //cycle ++;
         addr = PC.cur/4 ; //load instruction memory
         PC_ALU(); //PC = PC+4 -> next instruction
         Decode(inst_mem[addr]); //Decode current instruction
         Read_Reg(); //Read the red data and signed immediate( simmediate )
         ALU(); //Implement the instruction meaning
-        Error_Halt(); //Detect error occur ( D Memory and Misaligned )
     }
 
     //close *.rpt
@@ -95,6 +97,7 @@ void read_iimage()
         inst=c2i_inst_data(inst,4-i,c);
     }
     PC.cur = inst; // write into pc
+    cout << hex << PC.cur << endl;
 
     // numbers of instruction
     for(int i=0; i<4; i++)
@@ -171,12 +174,12 @@ void read_dimage()
 		if(addr+3>1024)
         {
             cout << "illegal testcase" << endl;
-            system("pause");
+            error_halt = 1;
         }
 		data_mem[addr]   = (data&0xff000000)>>24;
-		data_mem[addr+1] = (data&0xff000000)>>16;
-		data_mem[addr+2] = (data&0xff000000)>>8 ;
-		data_mem[addr+3] = (data&0xff000000)    ;
+		data_mem[addr+1] = (data&0x00ff0000)>>16;
+		data_mem[addr+2] = (data&0x0000ff00)>>8 ;
+		data_mem[addr+3] = (data&0x000000ff)    ;
 
 		temp--;
     }
@@ -198,6 +201,8 @@ unsigned int c2i_inst_data(unsigned int inst, int pow,unsigned char value)
 
 void Snapshot()
 {
+    snapshot << "cycle " << dec << cyc << endl;
+    //cout << "cyc : " << dec << cyc << endl;
     if(cyc==0)
     {
         //1st cyc snapshot  reg -> HI -> LO -> PC
@@ -205,7 +210,7 @@ void Snapshot()
             snapshot << "$" << setw(2) << setfill('0') << dec << i << ": 0x" << setw(8) << setfill('0') << hex << uppercase << reg[i].cur << endl;
         snapshot << "$HI: 0x" << setw(8) << setfill('0') << hex << uppercase << HI.cur << endl;
         snapshot << "$LO: 0x" << setw(8) << setfill('0') << hex << uppercase << LO.cur << endl;
-        snapshot << "$PC: 0x" << setw(8) << setfill('0') << hex << uppercase << PC.cur << endl;
+        snapshot << "PC: 0x" << setw(8) << setfill('0') << hex << uppercase << PC.cur << endl;
     }
     else
     {
@@ -218,24 +223,12 @@ void Snapshot()
         if(LO.pre!=LO.cur)
             snapshot << "$LO: 0x" << setw(8) << setfill('0') << hex << uppercase << LO.cur << endl;
         if(PC.pre!=PC.cur)
-            snapshot << "$PC: 0x" << setw(8) << setfill('0') << hex << uppercase << PC.cur << endl;
+            snapshot << "PC: 0x" << setw(8) << setfill('0') << hex << uppercase << PC.cur << endl;
     }
+    snapshot << endl << endl;
     for(int i = 0; i<32 ; i++)
         reg[i].pre = reg[i].cur;
     HI.pre = HI.cur;
     LO.pre = LO.cur;
     PC.pre = PC.cur;
-}
-
-void Error_Halt()
-{
-    if(error_halt == 1)
-    {
-        /* close *.rpt */
-        snapshot.close();
-        error_dump.close();
-
-        /* the simulation halt */
-        system("pause");
-    }
 }

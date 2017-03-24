@@ -20,7 +20,7 @@ void Error_R0()
             error_dump <<  "In cycle " << dec << cyc << ": Write $0 Error" << endl;
     break;
     default :
-        if( rd==0 )
+        if( rt==0 )
             error_dump <<  "In cycle " << dec << cyc << ": Write $0 Error" << endl;
     break;
     }

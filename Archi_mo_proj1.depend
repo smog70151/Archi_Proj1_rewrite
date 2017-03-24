@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1490336239 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\alu.cpp
+1490368736 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\alu.cpp
 	<iostream>
 	<iomanip>
 	<fstream>
@@ -24,7 +24,7 @@
 	<cstdlib>
 	"var.h"
 
-1490336372 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\decode.cpp
+1490368842 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\decode.cpp
 	<iostream>
 	<iomanip>
 	<fstream>
@@ -33,7 +33,7 @@
 	<cstdlib>
 	"var.h"
 
-1490328792 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\error_detect.cpp
+1490352088 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\error_detect.cpp
 	<iostream>
 	<iomanip>
 	<fstream>
@@ -42,7 +42,7 @@
 	<cstdlib>
 	"var.h"
 
-1490336387 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\main.cpp
+1490369079 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\main.cpp
 	<iostream>
 	<iomanip>
 	<fstream>
@@ -89,6 +89,13 @@
 	<fstream>
 	<string>
 	<stdlib.h>
+	<cstdlib>
+	"var.h"
+
+1490336498 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\var.cpp
+	<iostream>
+	<fstream>
+	<string>
 	<cstdlib>
 	"var.h"
 

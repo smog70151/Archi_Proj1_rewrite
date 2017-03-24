@@ -127,7 +127,7 @@ void ALU()
         break;
         default :
             cout << "illegal instruction found at 0xaddress" ;
-            system("pause");
+            error_halt = 1;
         break;
         }
     break;
@@ -192,10 +192,11 @@ void ALU()
         J_jal();
     break;
     case 0x3f : //halt
+        halt();
     break;
     default :
         cout << "illegal instruction found at 0xaddress" ;
-        system("pause");
+        error_halt = 1;
     break;
     }
 }
@@ -270,7 +271,8 @@ void R_sll()
 void R_srl()
 {
     //$d = $t >> C
-    reg[rd].cur = read_data2 >> shamt;
+    reg[rd].cur = (unsigned int)read_data2 >> shamt;
+
     Error_R0(); //detect Write Register[0]
 }
 void R_sra()
@@ -379,7 +381,7 @@ void I_lh()
         reg[rt].cur = (data_mem[addr  ] << 8)
                     + (data_mem[addr+1]     );
         if( reg[rt].cur & 0x00008000 )
-            reg[rt].cur = reg[rt].cur | 0xffff8000;
+            reg[rt].cur = reg[rt].cur | 0xffff0000;
     }
     Error_R0(); //detect Write Register[0]
     Error_OVF(); //detect Adder OVF
@@ -434,10 +436,10 @@ void I_sw()
     addr = read_data1 + simmediate;
     if(0<=addr&&addr<=1020)
     {
-        data_mem[addr  ] = (reg[rt].cur >> 24) && 0x000000ff;
-        data_mem[addr+1] = (reg[rt].cur >> 16) && 0x000000ff;
-        data_mem[addr+2] = (reg[rt].cur >>  8) && 0x000000ff;
-        data_mem[addr+3] = (reg[rt].cur      ) && 0x000000ff;
+        data_mem[addr  ] = (reg[rt].cur >> 24) & 0x000000ff;
+        data_mem[addr+1] = (reg[rt].cur >> 16) & 0x000000ff;
+        data_mem[addr+2] = (reg[rt].cur >>  8) & 0x000000ff;
+        data_mem[addr+3] = (reg[rt].cur      ) & 0x000000ff;
     }
     Error_OVF(); //detect Adder OVF
     Error_Dmem(addr); //detect D Memory OVF
@@ -450,8 +452,8 @@ void I_sh()
     addr = read_data1 + simmediate;
     if(0<=addr&&addr<=1022)
     {
-        data_mem[addr  ] = (reg[rt].cur >>  8) && 0x000000ff;
-        data_mem[addr+1] = (reg[rt].cur      ) && 0x000000ff;
+        data_mem[addr  ] = (reg[rt].cur >>  8) & 0x000000ff;
+        data_mem[addr+1] = (reg[rt].cur      ) & 0x000000ff;
     }
     Error_OVF(); //detect Adder OVF
     Error_Dmem(addr); //detect D Memory OVF
@@ -463,7 +465,7 @@ void I_sb()
     int addr;
     addr = read_data1 + simmediate;
     if(0<=addr&&addr<=1023)
-        data_mem[addr  ] = (reg[rt].cur      ) && 0x000000ff;
+        data_mem[addr  ] = (reg[rt].cur      ) & 0x000000ff;
     Error_OVF(); //detect Adder OVF
     Error_Dmem(addr); //detect D Memory OVF
     Error_Misaligned(addr); //detect S/L Wrong Memory
@@ -542,7 +544,7 @@ void J_jal()
 /* S-Type Instructions */
 void halt()
 {
-    system("pause");
+    error_halt = 1;
 }
 /* S-Type Instructions */
 
