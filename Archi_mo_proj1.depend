@@ -1,0 +1,94 @@
+# depslib dependency file v1.0
+1490336239 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\alu.cpp
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+	"error_detect.h"
+
+1490336324 d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\var.h
+	<iostream>
+	<fstream>
+	<string>
+	<cstdlib>
+
+1490328659 d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\error_detect.h
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+
+1490336372 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\decode.cpp
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+
+1490328792 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\error_detect.cpp
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+
+1490336387 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\main.cpp
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+	"decode.h"
+	"register.h"
+	"alu.h"
+	"error_detect.h"
+
+1490327145 d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\decode.h
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+
+1490327133 d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\register.h
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+
+1490327154 d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\alu.h
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+	"error_detect.h"
+
+1490336413 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\register.cpp
+	<iostream>
+	<iomanip>
+	<fstream>
+	<string>
+	<stdlib.h>
+	<cstdlib>
+	"var.h"
+

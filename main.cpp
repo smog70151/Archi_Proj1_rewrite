@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <stdlib.h>
+#include <cstdlib>
 // to include the var
 #include "var.h"
 // to decode the instruction
@@ -12,6 +13,7 @@
 // to implement the instruction
 #include "alu.h"
 // to detect the error
+#include "error_detect.h"
 
 using namespace std;
 
@@ -24,6 +26,8 @@ void read_iimage();
 void read_dimage();
 //Snapshot
 void Snapshot();
+//Error halt immediately
+void Error_Halt();
 
 
 int main()
@@ -43,9 +47,9 @@ int main()
         addr = PC.cur/4 ; //load instruction memory
         PC_ALU(); //PC = PC+4 -> next instruction
         Decode(inst_mem[addr]); //Decode current instruction
-        Read_Reg(); //Read the red data and signed immediate(simmediate)
-        ALU();
-
+        Read_Reg(); //Read the red data and signed immediate( simmediate )
+        ALU(); //Implement the instruction meaning
+        Error_Halt(); //Detect error occur ( D Memory and Misaligned )
     }
 
     //close *.rpt
@@ -69,6 +73,9 @@ void init()
         reg[i].cur = reg[i].pre = 0;
     //Init cyc
     cyc = 0;
+    //Init Error halt detect
+    error_halt = 0;
+    flag_OVW = true; // true -> correct
 
     snapshot.open("snapshot.rpt",ios::out);
     error_dump.open("error_dump.rpt",ios::out);
@@ -145,7 +152,7 @@ void read_dimage()
     {
         if(i==0) data = 0;
         dimage.read((char*)&c,sizeof(char));
-        data=c2i_inst_data(inst,4-i,c);
+        data=c2i_inst_data(data,4-i,c);
     }
     temp = count = data; // following data
 
@@ -218,4 +225,17 @@ void Snapshot()
     HI.pre = HI.cur;
     LO.pre = LO.cur;
     PC.pre = PC.cur;
+}
+
+void Error_Halt()
+{
+    if(error_halt == 1)
+    {
+        /* close *.rpt */
+        snapshot.close();
+        error_dump.close();
+
+        /* the simulation halt */
+        system("pause");
+    }
 }

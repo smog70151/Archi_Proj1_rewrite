@@ -1,6 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdlib>
+// to include the var
+#include "var.h"
 
 using namespace std;
 
@@ -31,5 +34,9 @@ unsigned int rt, rs, rd, shamt; //5 bits
 
 //Reg var
 //data1 = rs, data2 = rt
-unsigned int read_data1, read_data2; //to calculate
+int read_data1, read_data2; //to calculate
 int simmediate; //signed immediate 16 -> 32
+
+//Error
+int error_halt; //D memory OVF or Misaligned occur
+bool flag_OVW; //to detect HI, LO OVW

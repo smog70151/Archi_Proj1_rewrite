@@ -1,6 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdlib>
+#ifndef VAR_H
+#define VAR_H
+
 
 using namespace std;
 
@@ -13,7 +17,7 @@ extern fstream iimage;      // read iimage
 extern fstream dimage;      // read dimage
 
 //reg part
-typedef struct REG {
+typedef struct Register {
     int pre;
     int cur;
 } Register;
@@ -22,7 +26,7 @@ extern Register reg[32];
 extern Register HI, LO, PC;
 
 //Instruction and Data memory storage
-extern unsigned int inst_mem[1024]; //iimage max 1KB
+extern unsigned int inst_mem[256]; //iimage max 1KB
 extern unsigned int data_mem[1024]; //dimage max 1KB
 
 //cyc
@@ -38,4 +42,9 @@ extern unsigned int rt, rs, rd, shamt; //5 bits
 //data1 = rs, data2 = rt
 extern int read_data1, read_data2; //to calculate
 extern int simmediate; //signed immediate 16 -> 32
-beq
+
+//Error
+extern int error_halt; //D memory OVF or Misaligned occur
+extern bool flag_OVW; //to detect HI, LO OVW
+
+#endif // VAR_H

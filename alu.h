@@ -3,8 +3,11 @@
 #include <fstream>
 #include <string>
 #include <stdlib.h>
+#include <cstdlib>
 // to include the var
 #include "var.h"
+// error detect
+#include "error_detect.h"
 
 using namespace std;
 

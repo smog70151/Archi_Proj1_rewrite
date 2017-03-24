@@ -3,8 +3,68 @@
 #include <fstream>
 #include <string>
 #include <stdlib.h>
+#include <cstdlib>
+// to include the var
+#include "var.h"
+// to detect the error
+#include "error_detect.h"
 
 using namespace std;
+
+/* R-Type Instructions */ //17
+//No shamt
+void R_add();
+void R_addu();
+void R_sub();
+void R_and();
+void R_or();
+void R_xor();
+void R_nor();
+void R_nand();
+void R_slt();
+//No rs
+void R_sll();
+void R_srl();
+void R_sra();
+//Only rs
+void R_jr();
+//rs and rt
+void R_mult();
+void R_multu();
+//Only rd
+void R_mfhi();
+void R_mflo();
+/* R-Type Instructions */
+
+/* I-Type Instructions */ //18
+void I_addi();
+void I_addiu();
+void I_lw();
+void I_lh();
+void I_lhu();
+void I_lb();
+void I_lbu();
+void I_sw();
+void I_sh();
+void I_sb();
+void I_lui();
+void I_andi();
+void I_ori();
+void I_nori();
+void I_slti();
+void I_beq();
+void I_bne();
+void I_bgtz();
+/* I-Type Instructions */
+
+/* J-Type Instructions */
+void J_j();
+void J_jal();
+/* J-Type Instructions */
+
+/* S-Type Instructions */
+void halt();
+/* S-Type Instructions */
 
 //implement the meaning of the instruction
 void ALU()
@@ -38,7 +98,7 @@ void ALU()
         case 0x28 : //nand $d,$s,$t
             R_nand();
         break;
-        case 0x2a ; //slt $d,$s,$t
+        case 0x2a : //slt $d,$s,$t
             R_slt();
         break;
         case 0x00 : //sll $d,$t,C
@@ -146,46 +206,57 @@ void R_add()
 {
     //$d = $s + $t
     reg[rd].cur = read_data1 + read_data2;
+    Error_R0(); //detect Write Register[0]
+    Error_OVF(); //detect Adder OVF
 }
 void R_addu()
 {
     //$d = $s + $t(unsigned, no overflow exception)
     reg[rd].cur = read_data1 + read_data2;
+    Error_R0(); //detect Write Register[0]
 }
 void R_sub()
 {
     //$d = $s - $t
     reg[rd].cur = read_data1 - read_data2;
+    Error_R0(); //detect Write Register[0]
+    Error_OVF(); //detect Adder OVF
 }
 void R_and()
 {
     //$d = $s & $t
     reg[rd].cur = read_data1 & read_data2;
+    Error_R0(); //detect Write Register[0]
 }
 void R_or()
 {
     //$d = $s | $t
     reg[rd].cur = read_data1 | read_data2;
+    Error_R0(); //detect Write Register[0]
 }
 void R_xor()
 {
     //$d = $s ^ $t
     reg[rd].cur = read_data1 ^ read_data2;
+    Error_R0(); //detect Write Register[0]
 }
 void R_nor()
 {
     //$d = ~ ($s | $t)
     reg[rd].cur = ~(read_data1 | read_data2);
+    Error_R0(); //detect Write Register[0]
 }
 void R_nand()
 {
     //$d = ~($s & $t)
     reg[rd].cur = ~(read_data1 & read_data2);
+    Error_R0(); //detect Write Register[0]
 }
 void R_slt()
 {
     //$d = ($s < $t), signed comparison
     reg[rd].cur = read_data1 < read_data2;
+    Error_R0(); //detect Write Register[0]
 }
 
 /* No rs */
@@ -193,11 +264,14 @@ void R_sll()
 {
     //$d = $t << C
     reg[rd].cur = read_data2 << shamt;
+    if( rt != 0 || rd !=0 || shamt !=0 )
+        Error_R0(); //detect Write Register[0]
 }
 void R_srl()
 {
     //$d = $t >> C
     reg[rd].cur = read_data2 >> shamt;
+    Error_R0(); //detect Write Register[0]
 }
 void R_sra()
 {
@@ -206,6 +280,7 @@ void R_sra()
         reg[rd].cur = (0xffffffff00000000 | (unsigned long long ) read_data2) >> shamt;
     else
         reg[rd].cur = read_data2 >> shamt;
+    Error_R0(); //detect Write Register[0]
 }
 
 /* Only rs */
@@ -231,6 +306,7 @@ void R_mult()
         temp_rt = read_data2 & 0x00000000ffffffff;
     HI.cur = (temp_rs*temp_rt) >> 32;
     LO.cur = (temp_rs*temp_rt) & 0x00000000ffffffff;
+    Error_OVW(); //detect OVW HI, LO
 }
 void R_multu()
 {
@@ -242,6 +318,7 @@ void R_multu()
 
     HI.cur = (temp_rs*temp_rt) >> 32;
     LO.cur = (temp_rs*temp_rt) & 0x00000000ffffffff;
+    Error_OVW(); //detect OVW HI, LO
 }
 
 /* Only rd */
@@ -249,11 +326,15 @@ void R_mfhi()
 {
     //$d = Hi
     reg[rd].cur = HI.cur;
+    Error_R0(); //detect Write Register[0]
+    Flag_OVW(); //Flag to detect OVW
 }
 void R_mflo()
 {
     //$d = Lo
     reg[rd].cur = LO.cur;
+    Error_R0(); //detect Write Register[0]
+    Flag_OVW(); //Flag to detect OVW
 }
 
 /* R-Type instructions */
@@ -263,11 +344,14 @@ void I_addi()
 {
     //$t = $s + C(signed)
     reg[rt].cur = read_data1 + simmediate;
+    Error_R0(); //detect Write Register[0]
+    Error_OVF(); //detect Adder OVF
 }
 void I_addiu()
 {
     //$t = $s + C(unsigned, no overflow exception)
     reg[rt].cur = read_data1 + simmediate;
+    Error_R0(); //detect Write Register[0]
 }
 void I_lw()
 {
@@ -279,6 +363,10 @@ void I_lw()
                     + (data_mem[addr+1] << 16)
                     + (data_mem[addr+2] <<  8)
                     + (data_mem[addr+3]      );
+    Error_R0(); //detect Write Register[0]
+    Error_OVF(); //detect Adder OVF
+    Error_Dmem(addr); //detect D Memory OVF
+    Error_Misaligned(addr); //detect S/L Wrong Memory
 
 }
 void I_lh()
@@ -293,7 +381,10 @@ void I_lh()
         if( reg[rt].cur & 0x00008000 )
             reg[rt].cur = reg[rt].cur | 0xffff8000;
     }
-
+    Error_R0(); //detect Write Register[0]
+    Error_OVF(); //detect Adder OVF
+    Error_Dmem(addr); //detect D Memory OVF
+    Error_Misaligned(addr); //detect S/L Wrong Memory
 }
 void I_lhu()
 {
@@ -303,6 +394,10 @@ void I_lhu()
     if(0<=addr&&addr<=1022)
         reg[rt].cur = (data_mem[addr  ] << 8)
                     + (data_mem[addr+1]     );
+    Error_R0(); //detect Write Register[0]
+    Error_OVF(); //detect Adder OVF
+    Error_Dmem(addr); //detect D Memory OVF
+    Error_Misaligned(addr); //detect S/L Wrong Memory
 }
 void I_lb()
 {
@@ -315,6 +410,10 @@ void I_lb()
         if( reg[rt].cur & 0x00000080 )
             reg[rt].cur = reg[rt].cur | 0xffffff00;
     }
+    Error_R0(); //detect Write Register[0]
+    Error_OVF(); //detect Adder OVF
+    Error_Dmem(addr); //detect D Memory OVF
+    Error_Misaligned(addr); //detect S/L Wrong Memory
 }
 void I_lbu()
 {
@@ -323,6 +422,10 @@ void I_lbu()
     addr = read_data1 + simmediate;
     if(0<=addr&&addr<=1023)
         reg[rt].cur = data_mem[addr];
+    Error_R0(); //detect Write Register[0]
+    Error_OVF(); //detect Adder OVF
+    Error_Dmem(addr); //detect D Memory OVF
+    Error_Misaligned(addr); //detect S/L Wrong Memory
 }
 void I_sw()
 {
@@ -336,6 +439,9 @@ void I_sw()
         data_mem[addr+2] = (reg[rt].cur >>  8) && 0x000000ff;
         data_mem[addr+3] = (reg[rt].cur      ) && 0x000000ff;
     }
+    Error_OVF(); //detect Adder OVF
+    Error_Dmem(addr); //detect D Memory OVF
+    Error_Misaligned(addr); //detect S/L Wrong Memory
 }
 void I_sh()
 {
@@ -347,6 +453,9 @@ void I_sh()
         data_mem[addr  ] = (reg[rt].cur >>  8) && 0x000000ff;
         data_mem[addr+1] = (reg[rt].cur      ) && 0x000000ff;
     }
+    Error_OVF(); //detect Adder OVF
+    Error_Dmem(addr); //detect D Memory OVF
+    Error_Misaligned(addr); //detect S/L Wrong Memory
 }
 void I_sb()
 {
@@ -355,32 +464,39 @@ void I_sb()
     addr = read_data1 + simmediate;
     if(0<=addr&&addr<=1023)
         data_mem[addr  ] = (reg[rt].cur      ) && 0x000000ff;
-
+    Error_OVF(); //detect Adder OVF
+    Error_Dmem(addr); //detect D Memory OVF
+    Error_Misaligned(addr); //detect S/L Wrong Memory
 }
 void I_lui()
 {
     //$t = C << 16
     reg[rt].cur = immediate << 16;
+    Error_R0(); //detect Write Register[0]
 }
 void I_andi()
 {
     //$t = $s & C(unsigned)
     reg[rt].cur = read_data1 & immediate;
+    Error_R0(); //detect Write Register[0]
 }
 void I_ori()
 {
     //$t = $s | C(unsigned)
     reg[rt].cur = read_data1 | immediate;
+    Error_R0(); //detect Write Register[0]
 }
 void I_nori()
 {
     //$t = ~($s | C(unsigned))
     reg[rt].cur = ~(read_data1 | immediate);
+    Error_R0(); //detect Write Register[0]
 }
 void I_slti()
 {
     //$t = ($s < C(signed) ), signed comparison
-    reg_cur[rt]= read_data1 < simmediate;
+    reg[rt].cur = read_data1 < simmediate;
+    Error_R0(); //detect Write Register[0]
 }
 void I_beq()
 {
@@ -389,6 +505,7 @@ void I_beq()
     {
         PC.cur = PC.cur + ( simmediate << 2 );
     }
+    Error_OVF(); //detect Adder OVF
 }
 void I_bne()
 {
@@ -397,6 +514,7 @@ void I_bne()
     {
         PC.cur = PC.cur + ( simmediate << 2 );
     }
+    Error_OVF(); //detect Adder OVF
 }
 void I_bgtz()
 {
@@ -405,6 +523,7 @@ void I_bgtz()
     {
         PC.cur = PC.cur + ( simmediate << 2 );
     }
+    Error_OVF(); //detect Adder OVF
 }
 /* I-Type Instructions */
 
