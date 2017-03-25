@@ -40,12 +40,9 @@ int main()
     //simulation part
     while(1)
     {
-        if(error_halt==1)
-            break;
-        //if(cyc==425)
-        //    break;
+        if(error_halt==1) break; //error detect 1.halt 2.error
         Snapshot();
-        //if(cyc==11) break;
+        if(cyc==500001 || PC.cur > 1023) break; //cyc > 500,000
         cyc++; //cycle ++;
         addr = PC.cur/4 ; //load instruction memory
         PC_ALU(); //PC = PC+4 -> next instruction
@@ -97,7 +94,6 @@ void read_iimage()
         inst=c2i_inst_data(inst,4-i,c);
     }
     PC.cur = inst; // write into pc
-    cout << hex << PC.cur << endl;
 
     // numbers of instruction
     for(int i=0; i<4; i++)
@@ -121,10 +117,11 @@ void read_iimage()
 
         //store inst
         unsigned int addr = PC.cur/4 + count - temp ;
-        if(addr>1023)
+        if(addr>255)
         {
             cout << "illegal testcase" << endl;
-            system("pause");
+            error_halt = 1;
+            break;
         }
         inst_mem[addr]=inst;
 
@@ -171,10 +168,11 @@ void read_dimage()
 
 		//store mem
 		unsigned int addr = 4*(count - temp);
-		if(addr+3>1024)
+		if(addr+3>1023)
         {
             cout << "illegal testcase" << endl;
             error_halt = 1;
+            break;
         }
 		data_mem[addr]   = (data&0xff000000)>>24;
 		data_mem[addr+1] = (data&0x00ff0000)>>16;

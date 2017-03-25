@@ -21,9 +21,6 @@ void Decode(unsigned int inst)
     rd = (inst>>11)%(1<<5); //rd : 5-bits
     shamt = (inst>>6)%(1<<5); //shamt : 5-bits
 
-    //cout << hex << "opcode : " << opcode << endl;
-    //cout << hex << "funct : " << funct << endl;
-
 
 }
 

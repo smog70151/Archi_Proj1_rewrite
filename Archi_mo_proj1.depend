@@ -24,7 +24,7 @@
 	<cstdlib>
 	"var.h"
 
-1490368842 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\decode.cpp
+1490411077 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\decode.cpp
 	<iostream>
 	<iomanip>
 	<fstream>
@@ -42,7 +42,7 @@
 	<cstdlib>
 	"var.h"
 
-1490369079 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\main.cpp
+1490415265 source:d:\users\user\desktop\nthu\105_2nd_semester\archi\archi_mo_proj1\main.cpp
 	<iostream>
 	<iomanip>
 	<fstream>
